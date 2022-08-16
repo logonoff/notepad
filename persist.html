@@ -1,0 +1,54 @@
+<html contenteditable>
+	<head>
+		<link rel="icon" type="image/png" href="https://logonoff.co/notepad/favicon-192x192.png" sizes="192x192">
+		<meta name="application-name" content="Notepad Online">
+		<meta name="theme-color" content="#ffffff">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Notepad (persist)</title>
+		<style>
+			body {
+				font-family: "Consolas", "Courier New", Courier, monospace;
+			}
+		</style>
+		<script>
+			function load() {
+				try {
+				document.body.innerHTML = localStorage.getItem("body");
+				} catch (err) {
+					console.log(err);
+				};
+			};
+
+			function update() {
+				localStorage.setItem("body", document.body.innerHTML);
+				console.log("saved");
+			};
+
+			function clear() {
+				localStorage.setItem("body", "");
+				console.log("cleared");
+			};
+
+			function changeFormat() {
+				document.body.style.background = location.hash.substring(1);
+				if (window.location.search != "") {
+					document.body.style.color = window.location.search.replace("?", "").split("&")[0];
+					document.body.textContent = decodeURI(window.location.search.replace("?", "").split("&")[1]);
+				}
+			}
+
+			window.onhashchange = function() {  changeFormat(); }
+
+			window.onload = function() {
+				load();
+				changeFormat();
+
+				// todo: use MutationObserver
+				setInterval(update, 300);
+				document.addEventListener("keypress", update);
+			};
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
