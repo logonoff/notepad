@@ -6,30 +6,23 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Notepad (persist)</title>
 		<style>
-			body {
-				font-family: "Consolas", "Courier New", Courier, monospace;
-			}
+			body { font-family: "Consolas", "Courier New", Courier, monospace; }
 		</style>
 		<script>
-			function load() {
+			const load = () => {
 				try {
-				document.body.innerHTML = localStorage.getItem("body");
+					document.body.innerHTML = localStorage.getItem("body");
 				} catch (err) {
 					console.log(err);
 				};
 			};
 
-			function update() {
+			const update = () => {
 				localStorage.setItem("body", document.body.innerHTML);
 				console.log("saved");
 			};
 
-			function clear() {
-				localStorage.setItem("body", "");
-				console.log("cleared");
-			};
-
-			function changeFormat() {
+			const changeFormat = () => {
 				document.body.style.background = location.hash.substring(1);
 				if (window.location.search != "") {
 					document.body.style.color = window.location.search.replace("?", "").split("&")[0];
@@ -37,15 +30,14 @@
 				}
 			}
 
-			window.onhashchange = function() {  changeFormat(); }
+			const observer = new MutationObserver(update);
+
+			window.onhashchange = function() { changeFormat(); }
 
 			window.onload = function() {
 				load();
 				changeFormat();
-
-				// todo: use MutationObserver
-				setInterval(update, 300);
-				document.addEventListener("keypress", update);
+				observer.observe(document.body, { childList: true, subtree: true, characterData: true });
 			};
 		</script>
 	</head>
